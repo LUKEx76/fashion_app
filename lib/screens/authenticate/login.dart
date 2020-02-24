@@ -1,6 +1,7 @@
 import 'package:fashion_app/screens/authenticate/register.dart';
 import 'package:flutter/material.dart';
 import 'package:fashion_app/services/auth.dart';
+import 'package:fashion_app/shared/constants.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -9,10 +10,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final AuthService _auth = AuthService();
+  final _formKey = GlobalKey<FormState>();
 
   //Text field state
   String email = "";
   String password = "";
+  String errorMsg = "";
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +29,23 @@ class _LoginState extends State<Login> {
           horizontal: 50.0,
         ),
         child: Form(
+          key: _formKey,
           child: Column(
             children: <Widget>[
               SizedBox(height: 20.0),
               TextFormField(
+                decoration: textInputDecoration.copyWith(hintText: "Email"),
+                validator: (value) => value.isEmpty ? 'Enter an email' : null,
                 onChanged: (value) {
                   setState(() => email = value);
                 },
               ),
               SizedBox(height: 20.0),
               TextFormField(
+                decoration: textInputDecoration.copyWith(hintText: "Password"),
+                validator: (value) => value.length < 6
+                    ? 'Enter a password with 6 chars or more'
+                    : null,
                 obscureText: true,
                 onChanged: (value) {
                   setState(() => password = value);
@@ -45,9 +55,21 @@ class _LoginState extends State<Login> {
               RaisedButton(
                 child: Text("Log In"),
                 onPressed: () async {
-                  print(email + " - " + password);
-                  _auth.signInAnonym();
+                  if (_formKey.currentState.validate()) {
+                    dynamic result =
+                        await _auth.loginWithEmailAndPassword(email, password);
+                    if (result == null) {
+                      setState(() => errorMsg =
+                          "Could not log in with the given credentials");
+                    }
+                    //Auth Stream brings User to HomePage
+                  }
                 },
+              ),
+              SizedBox(height: 12.0),
+              Text(
+                errorMsg,
+                style: TextStyle(color: Colors.red),
               ),
               SizedBox(height: 50.0),
               Text(

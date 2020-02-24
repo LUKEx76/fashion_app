@@ -1,4 +1,3 @@
-import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +13,7 @@ class Home extends StatelessWidget {
           FlatButton(
             child: Icon(Icons.keyboard_arrow_left),
             onPressed: () async {
-              User user = await _auth.signOut();
+              await _auth.signOut();
             },
           ),
         ],
