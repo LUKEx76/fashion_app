@@ -1,3 +1,4 @@
+import 'package:fashion_app/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fashion_app/models/user.dart';
 
@@ -47,6 +48,8 @@ class AuthService {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User user = _userFromFirebaseUser(result.user);
+      //Create document for new User
+      await DatabaseService(user: user).updateUserData(user.uid, 100);
       return user;
     } catch (e) {
       print(e.toString());
