@@ -2,12 +2,12 @@ import 'package:fashion_app/models/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProfilDisplay extends StatefulWidget {
+class ProfilInfoDisplay extends StatefulWidget {
   @override
-  _ProfilDisplayState createState() => _ProfilDisplayState();
+  _ProfilInfoDisplayState createState() => _ProfilInfoDisplayState();
 }
 
-class _ProfilDisplayState extends State<ProfilDisplay> {
+class _ProfilInfoDisplayState extends State<ProfilInfoDisplay> {
   @override
   Widget build(BuildContext context) {
     final profil = Provider.of<Profil>(context);

@@ -4,15 +4,18 @@ import 'package:facebook_sdk/facebook_sdk.dart';
 class InstagramConnector {
   //DONT PUSH SECRETS TO GITHUB
   final String baseApiUrl = "https://api.instagram.com/";
-  final String redirectUrl = "https://google.com/";
+  final String redirectUrl = "https://fashion-7bc3d.web.app/";
   final String graphUrl = "https://graph.instagram.com/";
-  String code = "";
   String userData = "";
 
-//SECRETS
-  String appId = "";
-  String myIgUserId = "";
-  String myIgAccessToken = "";
+  //FROM POSTMAN
+  String myIgUserId = "17841400726355647";
+  String myIgAccessToken =
+      "IGQVJYTnBHcGRjSkFOWEhDTDlYRW9FakhXekJVSUJaTDlXZAEVybmx1eThBYkRxX0tmSFhKSlNhU3ctY0NzX1B0MWwzQkxvUmdnM3BVMXY1STNYX2c0TThFXzNyYUctMVBjRDFTR3BzYkE2ZA29fMlNET2RQSWh4RXBNYXVn";
+
+  void getAccessToken(String code) {
+    //Get User Token from Code
+  }
 
   //UNUSED
   Future<String> fetchCode() async {
