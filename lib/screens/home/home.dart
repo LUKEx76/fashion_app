@@ -2,7 +2,6 @@ import 'package:fashion_app/screens/home/posts/posts_fragment.dart';
 import 'package:fashion_app/screens/home/profil/profil_fragment.dart';
 import 'package:fashion_app/screens/home/search/search_fragment.dart';
 import 'package:fashion_app/services/auth.dart';
-import 'package:fashion_app/services/instagram.dart';
 import 'package:flutter/material.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +14,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
-  final InstagramConnector ig = InstagramConnector();
 
   int currentTab;
   PostsFragment posts;
@@ -26,9 +24,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    //Test
-    ig.getIgUserData().whenComplete(() => print(ig.userData));
-
     currentTab = 0;
     posts = PostsFragment();
     search = SearchFragment();

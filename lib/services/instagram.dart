@@ -1,43 +1,33 @@
 import 'package:http/http.dart' as http;
 import 'package:facebook_sdk/facebook_sdk.dart';
+import 'package:fashion_app/shared/strings.dart';
+import 'dart:convert';
 
 class InstagramConnector {
-  //DONT PUSH SECRETS TO GITHUB
-  final String baseApiUrl = "https://api.instagram.com/";
+  final String authUrl = "https://api.instagram.com/oauth/";
   final String redirectUrl = "https://fashion-7bc3d.web.app/";
   final String graphUrl = "https://graph.instagram.com/";
-  String userData = "";
 
-  //FROM POSTMAN
-  String myIgUserId = "17841400726355647";
-  String myIgAccessToken =
-      "IGQVJYTnBHcGRjSkFOWEhDTDlYRW9FakhXekJVSUJaTDlXZAEVybmx1eThBYkRxX0tmSFhKSlNhU3ctY0NzX1B0MWwzQkxvUmdnM3BVMXY1STNYX2c0TThFXzNyYUctMVBjRDFTR3BzYkE2ZA29fMlNET2RQSWh4RXBNYXVn";
+  String myIgUserId = "";
+  String myIgAccessToken = "";
 
-  void getAccessToken(String code) {
-    //Get User Token from Code
-  }
+  void getAccessToken(String code) async {
+    http.Response res = await http.post(authUrl + "access_token", body: {
+      "client_id": Strings.appId,
+      "client_secret": Strings.appSecret,
+      "grant_type": "authorization_code",
+      "redirect_uri": redirectUrl,
+      "code": code
+    });
+    if (res.statusCode < 200 || res.statusCode > 400 || res.body == null) {
+      print("HTTP POST ERROR: " + res.statusCode.toString());
+    } else {
+      var decodedRes = json.decode(res.body);
+      myIgUserId = decodedRes['user_id'].toString();
+      myIgAccessToken = decodedRes['access_token'];
 
-  //UNUSED
-  Future<String> fetchCode() async {
-    http.Response res = await http.get(baseApiUrl +
-        "oauth/authorize?client_id=" +
-        appId +
-        "&redirect_uri=" +
-        redirectUrl +
-        "&scope=user_profile,user_media&response_type=code");
-
-    for (String key in res.headers.keys) {
-      code += key + " - ";
+      print("User ID: " + myIgUserId);
+      print("Access Token: " + myIgAccessToken);
     }
-    return "Success";
-  }
-
-  Future<http.Response> getIgUserData() async {
-    http.Response res = await http.get(graphUrl +
-        myIgUserId +
-        "?fields=id,username&access_token=" +
-        myIgAccessToken);
-
-    userData = res.body.toString();
   }
 }
