@@ -1,3 +1,5 @@
+import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/screens/home/posts/posts_fragment.dart';
 import 'package:fashion_app/screens/home/profil/profil_fragment.dart';
 import 'package:fashion_app/screens/home/search/search_fragment.dart';
@@ -36,8 +38,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<List<Post>>.value(
-      value: DatabaseService().posts,
+    final user = Provider.of<User>(context);
+    return StreamProvider<Profil>.value(
+      value: DatabaseService(user: user).profil,
       child: Scaffold(
         appBar: AppBar(
           title: Text("fashion app"),

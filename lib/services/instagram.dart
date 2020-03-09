@@ -1,15 +1,26 @@
+import 'dart:async';
+
+import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/user.dart';
+import 'package:fashion_app/services/database.dart';
 import 'package:http/http.dart' as http;
 import 'package:facebook_sdk/facebook_sdk.dart';
 import 'package:fashion_app/shared/strings.dart';
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 class InstagramConnector {
   final String authUrl = "https://api.instagram.com/oauth/";
   final String redirectUrl = "https://fashion-7bc3d.web.app/";
   final String graphUrl = "https://graph.instagram.com/";
 
-  String myIgUserId = "";
-  String myIgAccessToken = "";
+  final User user;
+  DatabaseService _databaseService;
+
+  InstagramConnector({this.user}) {
+    _databaseService = DatabaseService(user: user);
+  }
 
   void getAccessToken(String code) async {
     http.Response res = await http.post(authUrl + "access_token", body: {
@@ -23,8 +34,10 @@ class InstagramConnector {
       print("HTTP POST ERROR: " + res.statusCode.toString());
     } else {
       var decodedRes = json.decode(res.body);
-      myIgUserId = decodedRes['user_id'].toString();
-      myIgAccessToken = decodedRes['access_token'];
+      String myIgUserId = decodedRes['user_id'].toString();
+      String myIgAccessToken = decodedRes['access_token'];
+
+      _databaseService.saveIgCredentials(myIgUserId, myIgAccessToken);
 
       print("User ID: " + myIgUserId);
       print("Access Token: " + myIgAccessToken);

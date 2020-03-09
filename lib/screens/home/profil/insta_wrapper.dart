@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 class InstaWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //final user = Provider.of<User>(context);  look if user has a valid insta access token
-    if (true) {
+    final String accessToken = Provider.of<String>(context);
+    //Check if user has valid Access Token
+    if (accessToken.length < 10) {
+      print("InstaWrapper: " + accessToken);
       return RaisedButton(
         child: Text("Connect to Instagram"),
         onPressed: () => Navigator.push(

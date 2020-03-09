@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/services/instagram.dart';
 import 'package:fashion_app/shared/strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class InstaLogin extends StatefulWidget {
@@ -13,8 +17,19 @@ class InstaLogin extends StatefulWidget {
 
 class _InstaLoginState extends State<InstaLogin> {
   var url;
+
+  GetIt getIt;
+  User user;
   WebViewController _webController;
-  InstagramConnector insta = InstagramConnector();
+  InstagramConnector insta;
+
+  @override
+  void initState() {
+    getIt = GetIt.instance;
+    user = getIt.get<User>();
+    insta = InstagramConnector(user: user);
+    super.initState();
+  }
 
   Future<String> extractCode() async {
     url = await _webController.currentUrl();

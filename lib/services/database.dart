@@ -39,10 +39,10 @@ class DatabaseService {
 
   //User Data from Snapshot
   Profil _profilFromSnapshot(DocumentSnapshot snapshot) {
-    return Profil(
-        user: user,
-        name: snapshot.data["name"],
-        coolness: snapshot.data["coolness"]);
+    Profil profil = Profil(user: user);
+    profil.name = snapshot.data["name"];
+    profil.coolness = snapshot.data["coolness"];
+    return profil;
   }
 
   //Get User Doc Stream -> Profil Page needs to subscribe to this
@@ -51,5 +51,26 @@ class DatabaseService {
         .document(user.uid)
         .snapshots()
         .map(_profilFromSnapshot);
+  }
+
+  //Save AccessToken to Database
+  Future saveIgCredentials(String igUserId, String igAccessToken) async {
+    return await profilsCollection.document(user.uid).updateData({
+      "igUserId": igUserId,
+      "igAccessToken": igAccessToken,
+    });
+  }
+
+  //Might check if expired
+  Stream<String> get accessToken {
+    return profilsCollection
+        .document(user.uid)
+        .snapshots()
+        .map(_accessTokenFromSnapshot);
+  }
+
+  //User Data from Snapshot
+  String _accessTokenFromSnapshot(DocumentSnapshot snapshot) {
+    return snapshot.data["accessToken"].toString();
   }
 }

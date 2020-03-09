@@ -38,6 +38,8 @@ dependencies:
 
   webview_flutter: ^0.3.19+8
 
+  get_it: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
