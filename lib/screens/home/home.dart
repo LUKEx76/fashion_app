@@ -7,7 +7,6 @@ import 'package:fashion_app/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:provider/provider.dart';
-import 'package:fashion_app/models/post.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -40,7 +39,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     return StreamProvider<Profil>.value(
-      value: DatabaseService(user: user).profil,
+      value: DatabaseService.inital(user).profil,
       child: Scaffold(
         appBar: AppBar(
           title: Text("fashion app"),

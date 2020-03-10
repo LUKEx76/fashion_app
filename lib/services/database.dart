@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/post.dart';
 import 'package:fashion_app/models/profil.dart';
 import 'package:fashion_app/models/user.dart';
+import 'package:get_it/get_it.dart';
 
 class DatabaseService {
   final CollectionReference profilsCollection =
@@ -10,13 +12,29 @@ class DatabaseService {
   final CollectionReference postsCollection =
       Firestore.instance.collection("posts");
 
-  final User user;
-  DatabaseService({this.user});
+  User user;
+  GetIt getIt = GetIt.instance;
+
+  DatabaseService.inital(User user) {
+    this.user = user;
+    try {
+      getIt.get<User>();
+    } catch (e) {
+      getIt.registerSingleton<User>(user);
+    }
+  }
+
+  DatabaseService() {
+    user = getIt.get<User>();
+    if (user == null) {
+      print("ERROR: DATABASE INSTANCE WITH A NULL USER");
+    }
+  }
 
   //Dummy Data right now
-  Future updateUserData(String name, int coolness) async {
+  Future initializeUserData(String name, int coolness) async {
     //on the first call, firebase creates document for uid
-    return await profilsCollection.document(user.uid).setData({
+    return await profilsCollection.document(name).setData({
       "name": name,
       "coolness": coolness,
     });
@@ -62,7 +80,7 @@ class DatabaseService {
   }
 
   //Might check if expired
-  Stream<String> get accessToken {
+  Stream<IgAccessToken> get accessToken {
     return profilsCollection
         .document(user.uid)
         .snapshots()
@@ -70,7 +88,13 @@ class DatabaseService {
   }
 
   //User Data from Snapshot
-  String _accessTokenFromSnapshot(DocumentSnapshot snapshot) {
-    return snapshot.data["accessToken"].toString();
+  IgAccessToken _accessTokenFromSnapshot(DocumentSnapshot snapshot) {
+    return IgAccessToken(
+        igUserId: snapshot.data["igUserId"] ?? "",
+        igAccessToken: snapshot.data["igAccessToken"] ?? "");
+  }
+
+  Future<IgAccessToken> get token {
+    //return profilsCollection.document(user.uid).snapshots().
   }
 }

@@ -1,5 +1,4 @@
 import 'package:fashion_app/models/user.dart';
-import 'package:fashion_app/services/database.dart';
 
 class Profil {
   final User user;
