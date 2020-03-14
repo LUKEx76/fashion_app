@@ -8,16 +8,40 @@ class InstaPictureDisplay extends StatefulWidget {
 
 class _InstaPictureDisplayState extends State<InstaPictureDisplay> {
   InstagramConnector _insta = InstagramConnector();
+  List<String> allMediaUrls;
+
+  @override
+  void initState() {
+    super.initState();
+    waitForPictures();
+  }
+
+  void waitForPictures() async {
+    List<String> mediaUrl;
+    await _insta.allPhotosOfUser().then((list) => mediaUrl = list);
+    setState(() => allMediaUrls = mediaUrl);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Text("Insta Picture Display"),
-          SizedBox(height: 20),
-        ],
-      ),
-    );
+    if (allMediaUrls == null) {
+      return Container(
+        child: Column(
+          children: <Widget>[
+            Text("Loading..."),
+            SizedBox(height: 20),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        child: Column(
+          children: <Widget>[
+            Text("Pictures:"),
+            SizedBox(height: 20),
+          ],
+        ),
+      );
+    }
   }
 }
