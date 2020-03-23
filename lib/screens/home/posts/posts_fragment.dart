@@ -12,8 +12,7 @@ class PostsFragment extends StatefulWidget {
 class _PostsFragmentState extends State<PostsFragment> {
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<List<Post>>.value(
-      value: DatabaseService().posts,
+    return Container(
       child: PostList(),
     );
   }

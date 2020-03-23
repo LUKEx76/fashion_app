@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashion_app/models/igAccessToken.dart';
+import 'package:fashion_app/models/igMedia.dart';
 import 'package:fashion_app/models/post.dart';
 import 'package:fashion_app/models/profil.dart';
 import 'package:fashion_app/models/user.dart';
@@ -94,7 +95,31 @@ class DatabaseService {
         igAccessToken: snapshot.data["igAccessToken"] ?? "");
   }
 
-  Future<IgAccessToken> get token {
-    //return profilsCollection.document(user.uid).snapshots().
+  //Save Username to Database
+  Future saveUsername(String userName) async {
+    return await profilsCollection.document(user.uid).updateData({
+      "name": userName,
+    });
+  }
+
+  //Get a List of Profils from Snapshot
+  List<Profil> _profilListSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return Profil.forDisplay(
+        name: doc.data["name"] ?? "",
+        profilPicture: doc.data["profilPicture"] ?? "",
+      );
+    }).toList();
+  }
+
+  Stream<List<Profil>> get profils {
+    return profilsCollection.snapshots().map(_profilListSnapshot);
+  }
+
+  //Save Username to Database
+  Future saveProfilPicture(IgMedia profilPicture) async {
+    return await profilsCollection.document(user.uid).updateData({
+      "profilPicture": profilPicture.mediaUrl,
+    });
   }
 }

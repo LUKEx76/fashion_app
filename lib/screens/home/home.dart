@@ -1,3 +1,4 @@
+import 'package:fashion_app/models/post.dart';
 import 'package:fashion_app/models/profil.dart';
 import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/screens/home/posts/posts_fragment.dart';
@@ -16,6 +17,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
 
+  bool showFab;
   int currentTab;
   PostsFragment posts;
   SearchFragment search;
@@ -25,6 +27,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    showFab = true;
     currentTab = 0;
     posts = PostsFragment();
     search = SearchFragment();
@@ -38,8 +41,18 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    return StreamProvider<Profil>.value(
-      value: DatabaseService.inital(user).profil,
+    return MultiProvider(
+      providers: [
+        StreamProvider<Profil>.value(
+          value: DatabaseService.inital(user).profil,
+        ),
+        StreamProvider<List<Profil>>.value(
+          value: DatabaseService.inital(user).profils,
+        ),
+        StreamProvider<List<Post>>.value(
+          value: DatabaseService().posts,
+        )
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Text("fashion app"),
@@ -53,10 +66,22 @@ class _HomeState extends State<Home> {
           ],
         ),
         body: currentPage,
+        floatingActionButton: Opacity(
+          opacity: showFab ? 1 : 0,
+          child: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () => print("FAB BUTTON PRESSED"), //Create Event
+          ),
+        ),
         bottomNavigationBar: BottomNavigationBar(
             currentIndex: currentTab,
             onTap: (index) {
               setState(() {
+                if (index == 0) {
+                  showFab = true;
+                } else {
+                  showFab = false;
+                }
                 currentTab = index;
                 currentPage = tabs[index];
               });

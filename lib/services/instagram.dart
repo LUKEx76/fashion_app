@@ -1,4 +1,5 @@
 import 'package:fashion_app/models/igAccessToken.dart';
+import 'package:fashion_app/models/igMedia.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:http/http.dart' as http;
 import 'package:fashion_app/shared/strings.dart';
@@ -42,33 +43,43 @@ class InstagramConnector {
         _shortLivedAccessToken);
     _longLivedAccessToken = response['access_token'] ?? "";
     _databaseService.saveIgCredentials(_userId, _longLivedAccessToken);
+    setUserName();
   }
 
-  //Might do different Methods for own Profil and others
-  Future<List<String>> allPhotosOfUser() async {
+  void setUserName() async {
     IgAccessToken accessToken = await _databaseService.accessToken.first;
     var response = await makeGetRequest(graphUrl +
         accessToken.igUserId +
-        "?fields=media&access_token=" +
+        "?fields=username&access_token=" +
+        accessToken.igAccessToken);
+    if (response != null) {
+      String userName = response['username'].toString();
+      if (userName != null) {
+        _databaseService.saveUsername(userName);
+      }
+    }
+  }
+
+  //Might do different Methods for own Profil and others
+  Future<List<IgMedia>> allPhotosOfUser() async {
+    IgAccessToken accessToken = await _databaseService.accessToken.first;
+    var response = await makeGetRequest(graphUrl +
+        accessToken.igUserId +
+        "/media" +
+        "?fields=id,media_type,media_url&access_token=" +
         accessToken.igAccessToken);
 
     if (response == null) {
       return null;
     }
-    List<dynamic> allMediaIdsMap = response['media']['data'];
-    List<String> allMediaIds = List<String>();
-    for (Map media in allMediaIdsMap) {
-      allMediaIds.add(media.values.first.toString());
-    }
-    List<String> allMediaUrls = List<String>();
-    for (String mediaId in allMediaIds) {
-      var response = await makeGetRequest(graphUrl +
-          mediaId +
-          "?fields=media_url&access_token=" +
-          accessToken.igAccessToken);
-      allMediaUrls.add(response['media_url'] ?? "");
-    }
-    return allMediaUrls;
+
+    Map responseMap = response;
+    List igMediaData = responseMap['data'];
+    List<IgMedia> igMedia =
+        igMediaData.map((dynamic item) => IgMedia.fromJson(item)).toList();
+
+    _databaseService.saveProfilPicture(igMedia.first);
+    return igMedia;
   }
 
   dynamic makeGetRequest(String url) async {
