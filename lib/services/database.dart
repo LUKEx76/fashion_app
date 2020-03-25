@@ -58,7 +58,7 @@ class DatabaseService {
 
   //User Data from Snapshot
   Profil _profilFromSnapshot(DocumentSnapshot snapshot) {
-    Profil profil = Profil(user: user);
+    Profil profil = Profil(user: User(uid: snapshot.documentID));
     profil.name = snapshot.data["name"];
     profil.coolness = snapshot.data["coolness"];
     return profil;
@@ -106,6 +106,7 @@ class DatabaseService {
   List<Profil> _profilListSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       return Profil.forDisplay(
+        user: User(uid: doc.documentID),
         name: doc.data["name"] ?? "",
         profilPicture: doc.data["profilPicture"] ?? "",
       );
@@ -121,5 +122,13 @@ class DatabaseService {
     return await profilsCollection.document(user.uid).updateData({
       "profilPicture": profilPicture.mediaUrl,
     });
+  }
+
+  Future<IgAccessToken> getAccessTokenFromUser(User user) async {
+    DocumentSnapshot userDocument =
+        await profilsCollection.document(user.uid).get();
+    return IgAccessToken(
+        igUserId: userDocument.data["igUserId"],
+        igAccessToken: userDocument.data["igAccessToken"]);
   }
 }

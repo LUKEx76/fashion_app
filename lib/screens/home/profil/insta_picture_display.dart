@@ -1,8 +1,13 @@
 import 'package:fashion_app/models/igMedia.dart';
+import 'package:fashion_app/models/profil.dart';
 import 'package:fashion_app/services/instagram.dart';
 import 'package:flutter/material.dart';
 
 class InstaPictureDisplay extends StatefulWidget {
+  final Profil profil;
+
+  InstaPictureDisplay({this.profil});
+
   @override
   _InstaPictureDisplayState createState() => _InstaPictureDisplayState();
 }
@@ -19,7 +24,7 @@ class _InstaPictureDisplayState extends State<InstaPictureDisplay> {
 
   void waitForPictures() async {
     List<IgMedia> temp = List<IgMedia>();
-    await _insta.allPhotosOfUser().then((list) => temp = list);
+    await _insta.allPhotosOfUser(widget.profil).then((list) => temp = list);
     setState(() => igMedia = temp);
   }
 

@@ -1,13 +1,24 @@
+import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/screens/home/profil/insta_picture_display.dart';
+import 'package:fashion_app/screens/home/profil/profil_info_display.dart';
 import 'package:flutter/material.dart';
 
-class DisplayProfil extends StatefulWidget {
-  @override
-  _DisplayProfilState createState() => _DisplayProfilState();
-}
+class DisplayProfil extends StatelessWidget {
+  final Profil profil;
 
-class _DisplayProfilState extends State<DisplayProfil> {
+  DisplayProfil({this.profil});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          ProfilInfoDisplay(profil: profil),
+          InstaPictureDisplay(profil: profil),
+        ],
+      ),
+    );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/igMedia.dart';
+import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:http/http.dart' as http;
 import 'package:fashion_app/shared/strings.dart';
@@ -61,10 +63,16 @@ class InstagramConnector {
   }
 
   //Might do different Methods for own Profil and others
-  Future<List<IgMedia>> allPhotosOfUser() async {
-    IgAccessToken accessToken = await _databaseService.accessToken.first;
+  Future<List<IgMedia>> allPhotosOfUser(Profil profil) async {
+    if (profil.user == null) {
+      return null;
+    }
+
+    IgAccessToken accessToken =
+        await _databaseService.getAccessTokenFromUser(profil.user);
+
     var response = await makeGetRequest(graphUrl +
-        accessToken.igUserId +
+        accessToken.igUserId + //Decide which ID and Token to use
         "/media" +
         "?fields=id,media_type,media_url&access_token=" +
         accessToken.igAccessToken);
@@ -78,7 +86,10 @@ class InstagramConnector {
     List<IgMedia> igMedia =
         igMediaData.map((dynamic item) => IgMedia.fromJson(item)).toList();
 
-    _databaseService.saveProfilPicture(igMedia.first);
+    if (profil.user.uid == _databaseService.user.uid) {
+      _databaseService.saveProfilPicture(igMedia.first);
+    }
+
     return igMedia;
   }
 

@@ -1,3 +1,4 @@
+import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/post.dart';
 import 'package:fashion_app/models/profil.dart';
 import 'package:fashion_app/models/user.dart';
@@ -7,6 +8,7 @@ import 'package:fashion_app/screens/home/search/search_fragment.dart';
 import 'package:fashion_app/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fashion_app/services/database.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -17,6 +19,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
 
+  GetIt getIt;
   bool showFab;
   int currentTab;
   PostsFragment posts;
@@ -27,6 +30,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    getIt = GetIt.instance;
     showFab = true;
     currentTab = 0;
     posts = PostsFragment();
@@ -51,7 +55,10 @@ class _HomeState extends State<Home> {
         ),
         StreamProvider<List<Post>>.value(
           value: DatabaseService().posts,
-        )
+        ),
+        StreamProvider<IgAccessToken>.value(
+          value: DatabaseService().accessToken,
+        ),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -60,6 +67,11 @@ class _HomeState extends State<Home> {
             FlatButton(
               child: Icon(Icons.keyboard_arrow_left),
               onPressed: () async {
+                try {
+                  getIt.reset();
+                } catch (e) {
+                  print("ERROR GetIt: " + e.toString());
+                }
                 await _auth.signOut();
               },
             ),

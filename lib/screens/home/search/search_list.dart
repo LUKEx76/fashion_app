@@ -1,4 +1,3 @@
-import 'package:fashion_app/screens/home/posts/post_tile.dart';
 import 'package:fashion_app/screens/home/search/search_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

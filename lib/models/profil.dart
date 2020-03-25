@@ -1,4 +1,3 @@
-import 'package:fashion_app/models/igMedia.dart';
 import 'package:fashion_app/models/user.dart';
 
 class Profil {
@@ -19,5 +18,5 @@ class Profil {
       this.myIgAccessToken,
       this.profilPicture});
 
-  Profil.forDisplay({this.name, this.profilPicture});
+  Profil.forDisplay({this.user, this.name, this.profilPicture});
 }
