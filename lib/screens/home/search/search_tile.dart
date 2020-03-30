@@ -25,7 +25,10 @@ class SearchTile extends StatelessWidget {
               ),
             ),
             child: ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(
+                Icons.person,
+                size: 50.0,
+              ),
               title: Text(profil.name),
               subtitle: Text("//ROLE"),
             ),

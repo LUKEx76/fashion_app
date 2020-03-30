@@ -82,7 +82,9 @@ class _LoginState extends State<Login> {
                     SizedBox(height: 12.0),
                     Text(
                       errorMsg,
-                      style: TextStyle(color: Colors.red),
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
                     ),
                     SizedBox(height: 50.0),
                     Text(
@@ -92,7 +94,9 @@ class _LoginState extends State<Login> {
                     FlatButton(
                       child: Text(
                         "Register now!",
-                        style: TextStyle(color: Colors.blue),
+                        style: TextStyle(
+                          color: Colors.blue,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       onPressed: () {

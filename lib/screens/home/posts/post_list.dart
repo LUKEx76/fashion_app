@@ -12,12 +12,22 @@ class _PostListState extends State<PostList> {
   @override
   Widget build(BuildContext context) {
     final posts = Provider.of<List<Post>>(context) ?? [];
-
-    return ListView.builder(
-      itemCount: posts.length,
-      itemBuilder: (context, index) {
-        return PostTile(post: posts[index]);
-      },
-    );
+    if (posts.length == 0) {
+      return Center(
+        child: Text(
+          "No Posts to be found",
+          style: TextStyle(
+            fontSize: 20.0,
+          ),
+        ),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (context, index) {
+          return PostTile(post: posts[index]);
+        },
+      );
+    }
   }
 }

@@ -47,12 +47,16 @@ class _InstaPictureDisplayState extends State<InstaPictureDisplay> {
             shrinkWrap: true,
             itemCount: igMedia.length ?? 0,
             itemBuilder: (context, index) {
-              return Container(
-                padding: EdgeInsets.all(10),
-                child: Image.network(
-                  igMedia[index].mediaUrl,
-                ),
-              );
+              if (igMedia[index].mediaType == "VIDEO") {
+                return Container();
+              } else {
+                return Container(
+                  padding: EdgeInsets.all(10),
+                  child: Image.network(
+                    igMedia[index].mediaUrl,
+                  ),
+                );
+              }
             },
           ),
         ),

@@ -1,7 +1,6 @@
 import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/igMedia.dart';
 import 'package:fashion_app/models/profil.dart';
-import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:http/http.dart' as http;
 import 'package:fashion_app/shared/strings.dart';
@@ -70,6 +69,10 @@ class InstagramConnector {
 
     IgAccessToken accessToken =
         await _databaseService.getAccessTokenFromUser(profil.user);
+
+    if (accessToken.igAccessToken.length == 0) {
+      return null;
+    }
 
     var response = await makeGetRequest(graphUrl +
         accessToken.igUserId + //Decide which ID and Token to use

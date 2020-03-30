@@ -44,10 +44,15 @@ class DatabaseService {
   //Get a List of Posts from Snapshot
   List<Post> _postListSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
+      Timestamp timestamp = doc.data["date"];
+      DateTime date =
+          DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
       return Post(
+          creator: User(uid: doc.data["creator"]),
           name: doc.data["name"] ?? "",
           location: doc.data["location"] ?? "Somewhere",
-          time: doc.data["time"] ?? 0);
+          description: doc.data["description"] ?? "",
+          date: date ?? null);
     }).toList();
   }
 
@@ -60,7 +65,6 @@ class DatabaseService {
   Profil _profilFromSnapshot(DocumentSnapshot snapshot) {
     Profil profil = Profil(user: User(uid: snapshot.documentID));
     profil.name = snapshot.data["name"];
-    profil.coolness = snapshot.data["coolness"];
     return profil;
   }
 
@@ -128,7 +132,29 @@ class DatabaseService {
     DocumentSnapshot userDocument =
         await profilsCollection.document(user.uid).get();
     return IgAccessToken(
-        igUserId: userDocument.data["igUserId"],
-        igAccessToken: userDocument.data["igAccessToken"]);
+        igUserId: userDocument.data["igUserId"] ?? "",
+        igAccessToken: userDocument.data["igAccessToken"] ?? "");
+  }
+
+  //Save Event from Create Event Form
+  Future saveEvent(
+      String name, String location, String description, DateTime date) async {
+    return await postsCollection.add({
+      "creator": user.uid,
+      "name": name,
+      "location": location,
+      "description": description,
+      "date": date,
+    });
+  }
+
+  Future<Profil> getProfil(User user) async {
+    DocumentSnapshot userDocument =
+        await profilsCollection.document(user.uid).get();
+    return Profil.forDisplay(
+      user: user,
+      name: userDocument.data["name"] ?? "",
+      profilPicture: userDocument.data["profilPicture"] ?? "",
+    );
   }
 }

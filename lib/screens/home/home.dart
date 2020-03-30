@@ -2,6 +2,7 @@ import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/post.dart';
 import 'package:fashion_app/models/profil.dart';
 import 'package:fashion_app/models/user.dart';
+import 'package:fashion_app/screens/home/posts/post_create.dart';
 import 'package:fashion_app/screens/home/posts/posts_fragment.dart';
 import 'package:fashion_app/screens/home/profil/profil_fragment.dart';
 import 'package:fashion_app/screens/home/search/search_fragment.dart';
@@ -82,7 +83,8 @@ class _HomeState extends State<Home> {
           opacity: showFab ? 1 : 0,
           child: FloatingActionButton(
             child: Icon(Icons.add),
-            onPressed: () => print("FAB BUTTON PRESSED"), //Create Event
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => CreatePost())),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
