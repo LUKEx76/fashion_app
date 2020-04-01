@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/igMedia.dart';
@@ -47,12 +49,16 @@ class DatabaseService {
       Timestamp timestamp = doc.data["date"];
       DateTime date =
           DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
-      return Post(
+      List<User> participants =
+          participantsFromDoc(doc).map((item) => User(uid: item)).toList();
+      return Post.fromDatabase(
           creator: User(uid: doc.data["creator"]),
           name: doc.data["name"] ?? "",
           location: doc.data["location"] ?? "Somewhere",
           description: doc.data["description"] ?? "",
-          date: date ?? null);
+          date: date ?? null,
+          id: doc.documentID,
+          participants: participants);
     }).toList();
   }
 
@@ -151,10 +157,117 @@ class DatabaseService {
   Future<Profil> getProfil(User user) async {
     DocumentSnapshot userDocument =
         await profilsCollection.document(user.uid).get();
+    if (userDocument.data == null) {
+      return null;
+    }
     return Profil.forDisplay(
       user: user,
       name: userDocument.data["name"] ?? "",
       profilPicture: userDocument.data["profilPicture"] ?? "",
     );
+  }
+
+  Future<List<Profil>> getParticipants(Post post) async {
+    if (post.id == null) {
+      return null;
+    }
+    DocumentSnapshot postDocument =
+        await postsCollection.document(post.id).get();
+    if (postDocument.data == null) {
+      return null;
+    }
+
+    DocumentSnapshot postDoc = await postsCollection.document(post.id).get();
+
+    if (postDoc.data["participants"] == null) {
+      return null;
+    }
+    List<String> partUsers = participantsFromDoc(postDoc);
+
+    if (partUsers.length == 0) {
+      return null;
+    }
+
+    List<Profil> participants = List<Profil>();
+    for (String part in partUsers) {
+      DocumentSnapshot partDoc = await profilsCollection.document(part).get();
+      participants.add(Profil.fromJson(partDoc.data));
+    }
+
+    return participants;
+  }
+
+  Future addSelfAsParticipant(Post post) async {
+    if (post.id == null) {
+      return;
+    }
+    DocumentSnapshot postDoc = await postsCollection.document(post.id).get();
+    if (postDoc.data["participants"] == null) {
+      postsCollection.document(post.id).updateData({"participants": user.uid});
+      return;
+    }
+
+    List<String> participants = participantsFromDoc(postDoc);
+
+    participants.add(user.uid);
+    postsCollection
+        .document(post.id)
+        .updateData({"participants": participants});
+  }
+
+  Future<bool> isSelfAlreadyPart(Post post) async {
+    if (post.id == null) {
+      return false;
+    }
+    DocumentSnapshot postDoc = await postsCollection.document(post.id).get();
+
+    List<String> participants = participantsFromDoc(postDoc);
+
+    for (String part in participants) {
+      if (part == user.uid) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //HELPER FUNCTIONS
+  List<String> participantsFromDoc(DocumentSnapshot doc) {
+    List<String> participants;
+    if (doc.data["participants"] == null) {
+      participants = List<String>();
+      return participants;
+    }
+    if (doc.data["participants"].runtimeType == String) {
+      participants = List<String>();
+      participants.add(doc.data["participants"]);
+    } else {
+      participants = List.from(doc.data["participants"]);
+    }
+    return participants;
+  }
+
+  Future<Post> getPost(Post post) async {
+    if (post.id == null) {
+      return null;
+    }
+    DocumentSnapshot postDoc = await postsCollection.document(post.id).get();
+    if (postDoc.data == null) {
+      return null;
+    }
+
+    Timestamp timestamp = postDoc.data["date"];
+    DateTime date =
+        DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
+    List<User> participants =
+        participantsFromDoc(postDoc).map((item) => User(uid: item)).toList();
+    return Post.fromDatabase(
+        creator: User(uid: postDoc.data["creator"]),
+        name: postDoc.data["name"] ?? "",
+        location: postDoc.data["location"] ?? "Somewhere",
+        description: postDoc.data["description"] ?? "",
+        date: date ?? null,
+        id: postDoc.documentID,
+        participants: participants);
   }
 }

@@ -84,8 +84,8 @@ class InstagramConnector {
       return null;
     }
 
-    Map responseMap = response;
-    List igMediaData = responseMap['data'];
+    //Map responseMap = response;
+    List igMediaData = response['data'];
     List<IgMedia> igMedia =
         igMediaData.map((dynamic item) => IgMedia.fromJson(item)).toList();
 

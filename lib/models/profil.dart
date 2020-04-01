@@ -17,4 +17,12 @@ class Profil {
       this.profilPicture});
 
   Profil.forDisplay({this.user, this.name, this.profilPicture});
+
+  factory Profil.fromJson(Map<String, dynamic> json) {
+    return Profil.forDisplay(
+      user: json['user'],
+      name: json['name'],
+      profilPicture: json['profilPicture'] ?? "",
+    );
+  }
 }

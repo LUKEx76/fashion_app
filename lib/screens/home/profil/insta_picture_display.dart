@@ -35,7 +35,7 @@ class _InstaPictureDisplayState extends State<InstaPictureDisplay> {
         child: Column(
           children: <Widget>[
             Text("Loading..."),
-            SizedBox(height: 20),
+            SizedBox(height: 20), //Can be deleted
           ],
         ),
       );
