@@ -1,10 +1,10 @@
 import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/post.dart';
-import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/profile.dart';
 import 'package:fashion_app/models/user.dart';
 import 'package:fashion_app/screens/home/posts/post_create.dart';
 import 'package:fashion_app/screens/home/posts/posts_fragment.dart';
-import 'package:fashion_app/screens/home/profil/profil_fragment.dart';
+import 'package:fashion_app/screens/home/profile/profile_fragment.dart';
 import 'package:fashion_app/screens/home/search/search_fragment.dart';
 import 'package:fashion_app/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
   int currentTab;
   PostsFragment posts;
   SearchFragment search;
-  ProfilFragment profil;
+  ProfileFragment profile;
   List<Widget> tabs;
   Widget currentPage;
 
@@ -36,9 +36,9 @@ class _HomeState extends State<Home> {
     currentTab = 0;
     posts = PostsFragment();
     search = SearchFragment();
-    profil = ProfilFragment();
+    profile = ProfileFragment();
 
-    tabs = [posts, search, profil];
+    tabs = [posts, search, profile];
     currentPage = posts;
     super.initState();
   }
@@ -48,11 +48,11 @@ class _HomeState extends State<Home> {
     final user = Provider.of<User>(context);
     return MultiProvider(
       providers: [
-        StreamProvider<Profil>.value(
-          value: DatabaseService.inital(user).profil,
+        StreamProvider<Profile>.value(
+          value: DatabaseService.inital(user).profile,
         ),
-        StreamProvider<List<Profil>>.value(
-          value: DatabaseService.inital(user).profils,
+        StreamProvider<List<Profile>>.value(
+          value: DatabaseService.inital(user).profiles,
         ),
         StreamProvider<List<Post>>.value(
           value: DatabaseService().posts,
@@ -111,7 +111,7 @@ class _HomeState extends State<Home> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
-                title: Text("Profil"),
+                title: Text("Profile"),
               ),
             ]),
       ),

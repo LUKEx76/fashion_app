@@ -12,6 +12,9 @@ class _PostListState extends State<PostList> {
   @override
   Widget build(BuildContext context) {
     final posts = Provider.of<List<Post>>(context) ?? [];
+    posts.sort((a, b) =>
+        a.date.millisecondsSinceEpoch.compareTo(b.date.millisecondsSinceEpoch));
+
     if (posts.length == 0) {
       return Center(
         child: Text(

@@ -1,7 +1,7 @@
-import 'package:fashion_app/screens/home/search/search_tile.dart';
+import 'package:fashion_app/screens/home/search/profile_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/profile.dart';
 
 class SearchList extends StatefulWidget {
   @override
@@ -11,12 +11,12 @@ class SearchList extends StatefulWidget {
 class _SearchListState extends State<SearchList> {
   @override
   Widget build(BuildContext context) {
-    final profils = Provider.of<List<Profil>>(context) ?? [];
+    final profiles = Provider.of<List<Profile>>(context) ?? [];
 
     return ListView.builder(
-      itemCount: profils.length,
+      itemCount: profiles.length,
       itemBuilder: (context, index) {
-        return SearchTile(profil: profils[index]);
+        return ProfileTile(profile: profiles[index]);
       },
     );
   }

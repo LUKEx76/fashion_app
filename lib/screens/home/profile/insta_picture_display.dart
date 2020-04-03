@@ -1,12 +1,12 @@
 import 'package:fashion_app/models/igMedia.dart';
-import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/profile.dart';
 import 'package:fashion_app/services/instagram.dart';
 import 'package:flutter/material.dart';
 
 class InstaPictureDisplay extends StatefulWidget {
-  final Profil profil;
+  final Profile profile;
 
-  InstaPictureDisplay({this.profil});
+  InstaPictureDisplay({this.profile});
 
   @override
   _InstaPictureDisplayState createState() => _InstaPictureDisplayState();
@@ -24,19 +24,19 @@ class _InstaPictureDisplayState extends State<InstaPictureDisplay> {
 
   void waitForPictures() async {
     List<IgMedia> temp = List<IgMedia>();
-    await _insta.allPhotosOfUser(widget.profil).then((list) => temp = list);
-    setState(() => igMedia = temp);
+    await _insta.allPhotosOfUser(widget.profile).then((list) => temp = list);
+    if (mounted) {
+      //check if widget still is displayed
+      setState(() => igMedia = temp);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (igMedia == null) {
       return Container(
-        child: Column(
-          children: <Widget>[
-            Text("Loading..."),
-            SizedBox(height: 20), //Can be deleted
-          ],
+        child: Center(
+          child: Text("Loading..."),
         ),
       );
     } else {

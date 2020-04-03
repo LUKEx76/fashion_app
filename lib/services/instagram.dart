@@ -1,6 +1,6 @@
 import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/igMedia.dart';
-import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/profile.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:http/http.dart' as http;
 import 'package:fashion_app/shared/strings.dart';
@@ -61,36 +61,35 @@ class InstagramConnector {
     }
   }
 
-  //Might do different Methods for own Profil and others
-  Future<List<IgMedia>> allPhotosOfUser(Profil profil) async {
-    if (profil.user == null) {
-      return null;
+  Future<List<IgMedia>> allPhotosOfUser(Profile profile) async {
+    String url;
+    if (profile.accessToken == null) {
+      IgAccessToken accessToken = await _databaseService.accessToken.first;
+      url = graphUrl +
+          accessToken.igUserId +
+          "/media" +
+          "?fields=id,media_type,media_url&access_token=" +
+          accessToken.igAccessToken;
+    } else {
+      url = graphUrl +
+          profile.accessToken.igUserId +
+          "/media" +
+          "?fields=id,media_type,media_url&access_token=" +
+          profile.accessToken.igAccessToken;
     }
 
-    IgAccessToken accessToken =
-        await _databaseService.getAccessTokenFromUser(profil.user);
-
-    if (accessToken.igAccessToken.length == 0) {
-      return null;
-    }
-
-    var response = await makeGetRequest(graphUrl +
-        accessToken.igUserId + //Decide which ID and Token to use
-        "/media" +
-        "?fields=id,media_type,media_url&access_token=" +
-        accessToken.igAccessToken);
+    var response = await makeGetRequest(url);
 
     if (response == null) {
       return null;
     }
 
-    //Map responseMap = response;
     List igMediaData = response['data'];
     List<IgMedia> igMedia =
         igMediaData.map((dynamic item) => IgMedia.fromJson(item)).toList();
 
-    if (profil.user.uid == _databaseService.user.uid) {
-      _databaseService.saveProfilPicture(igMedia.first);
+    if (profile.user.uid == _databaseService.user.uid) {
+      _databaseService.saveProfilePicture(igMedia.first);
     }
 
     return igMedia;

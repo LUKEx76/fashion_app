@@ -1,6 +1,6 @@
 import 'package:fashion_app/models/post.dart';
-import 'package:fashion_app/models/profil.dart';
-import 'package:fashion_app/screens/home/posts/participants_tile.dart';
+import 'package:fashion_app/models/profile.dart';
+import 'package:fashion_app/screens/home/search/profile_tile.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +14,7 @@ class ParticipantList extends StatefulWidget {
 
 class _ParticipantListState extends State<ParticipantList> {
   DatabaseService _databaseService = DatabaseService();
-  List<Profil> participants;
+  List<Profile> participants;
 
   @override
   void initState() {
@@ -23,12 +23,16 @@ class _ParticipantListState extends State<ParticipantList> {
   }
 
   void waitForParticipants() async {
-    List<Profil> temp = await _databaseService.getParticipants(widget.post);
-    setState(() => participants = temp);
+    List<Profile> temp = await _databaseService.getParticipants(widget.post);
+    if (mounted) {
+      //check if widget still is displayed
+      setState(() => participants = temp);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    waitForParticipants();
     if (participants == null) {
       return Container();
     } else if (participants.length == 0) {
@@ -39,8 +43,7 @@ class _ParticipantListState extends State<ParticipantList> {
           shrinkWrap: true,
           itemCount: participants.length,
           itemBuilder: (context, index) {
-            return ParticipantsTile(
-                participant: widget.post.participants[index]);
+            return ProfileTile(profile: participants[index]);
           },
         ),
       );

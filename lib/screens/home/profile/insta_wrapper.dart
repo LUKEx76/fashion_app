@@ -1,14 +1,14 @@
 import 'package:fashion_app/models/igAccessToken.dart';
-import 'package:fashion_app/models/profil.dart';
-import 'package:fashion_app/screens/home/profil/insta_login.dart';
-import 'package:fashion_app/screens/home/profil/insta_picture_display.dart';
+import 'package:fashion_app/models/profile.dart';
+import 'package:fashion_app/screens/home/profile/insta_login.dart';
+import 'package:fashion_app/screens/home/profile/insta_picture_display.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InstaWrapper extends StatelessWidget {
-  final Profil profil;
+  final Profile profile;
 
-  InstaWrapper({this.profil});
+  InstaWrapper({this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class InstaWrapper extends StatelessWidget {
             context, MaterialPageRoute(builder: (context) => InstaLogin())),
       );
     } else {
-      return InstaPictureDisplay(profil: profil);
+      return InstaPictureDisplay(profile: profile);
     }
   }
 }

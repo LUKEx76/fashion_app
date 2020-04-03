@@ -1,14 +1,15 @@
 import 'package:fashion_app/models/post.dart';
-import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/profile.dart';
 import 'package:fashion_app/screens/home/posts/participant_list.dart';
+import 'package:fashion_app/screens/home/search/profile_tile.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:flutter/material.dart';
 
 class DisplayPost extends StatefulWidget {
   final Post post;
-  final Profil creatorProfil;
+  final Profile creatorProfile;
 
-  DisplayPost({this.post, this.creatorProfil});
+  DisplayPost({this.post, this.creatorProfile});
 
   @override
   _DisplayPostState createState() => _DisplayPostState();
@@ -30,10 +31,13 @@ class _DisplayPostState extends State<DisplayPost> {
   void waitForDatabase() async {
     Post tempPost = await _databaseService.getPost(widget.post);
     bool tempBool = await _databaseService.isSelfAlreadyPart(widget.post);
-    setState(() {
-      alreadyPart = tempBool;
-      currentPost = tempPost;
-    });
+    if (mounted) {
+      //Check if widget still is displayed
+      setState(() {
+        alreadyPart = tempBool;
+        currentPost = tempPost;
+      });
+    }
   }
 
   @override
@@ -95,25 +99,16 @@ class _DisplayPostState extends State<DisplayPost> {
               textAlign: TextAlign.left,
             ),
             SizedBox(height: 30.0),
-            Row(
-              children: <Widget>[
-                Text("CREATOR:  "),
-                Image.network(
-                  widget.creatorProfil.profilPicture ?? "",
-                  width: 40.0,
-                  height: 40.0,
-                ),
-                Text("  " + widget.creatorProfil.name),
-              ],
-            ),
+            Text("CREATOR:"),
+            ProfileTile(profile: widget.creatorProfile),
             SizedBox(height: 40.0),
-            Text("Participants:"),
+            Text("PARTICIPANTS:"),
             ParticipantList(post: currentPost),
             SizedBox(height: 20.0),
             RaisedButton(
               child: Text("Participate"),
               onPressed:
-                  widget.creatorProfil.user.uid == _databaseService.user.uid ||
+                  widget.creatorProfile.user.uid == _databaseService.user.uid ||
                           alreadyPart
                       ? null
                       : () {

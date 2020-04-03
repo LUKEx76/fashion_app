@@ -1,15 +1,14 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashion_app/models/igAccessToken.dart';
 import 'package:fashion_app/models/igMedia.dart';
 import 'package:fashion_app/models/post.dart';
-import 'package:fashion_app/models/profil.dart';
+import 'package:fashion_app/models/profile.dart';
 import 'package:fashion_app/models/user.dart';
 import 'package:get_it/get_it.dart';
 
 class DatabaseService {
-  final CollectionReference profilsCollection =
+  //Typo in Profiles Collection: Name "profils" and Field "profilPicture"
+  final CollectionReference profilesCollection =
       Firestore.instance.collection("profils");
 
   final CollectionReference postsCollection =
@@ -35,11 +34,10 @@ class DatabaseService {
   }
 
   //Dummy Data right now
-  Future initializeUserData(String name, int coolness) async {
+  Future initializeUserData(String name) async {
     //on the first call, firebase creates document for uid
-    return await profilsCollection.document(name).setData({
+    return await profilesCollection.document(name).setData({
       "name": name,
-      "coolness": coolness,
     });
   }
 
@@ -68,23 +66,23 @@ class DatabaseService {
   }
 
   //User Data from Snapshot
-  Profil _profilFromSnapshot(DocumentSnapshot snapshot) {
-    Profil profil = Profil(user: User(uid: snapshot.documentID));
-    profil.name = snapshot.data["name"];
-    return profil;
+  Profile _profileFromSnapshot(DocumentSnapshot snapshot) {
+    Profile profile = Profile(user: User(uid: snapshot.documentID));
+    profile.name = snapshot.data["name"];
+    return profile;
   }
 
-  //Get User Doc Stream -> Profil Page needs to subscribe to this
-  Stream<Profil> get profil {
-    return profilsCollection
+  //Get User Doc Stream -> Profile Page needs to subscribe to this
+  Stream<Profile> get profile {
+    return profilesCollection
         .document(user.uid)
         .snapshots()
-        .map(_profilFromSnapshot);
+        .map(_profileFromSnapshot);
   }
 
   //Save AccessToken to Database
   Future saveIgCredentials(String igUserId, String igAccessToken) async {
-    return await profilsCollection.document(user.uid).updateData({
+    return await profilesCollection.document(user.uid).updateData({
       "igUserId": igUserId,
       "igAccessToken": igAccessToken,
     });
@@ -92,7 +90,7 @@ class DatabaseService {
 
   //Might check if expired
   Stream<IgAccessToken> get accessToken {
-    return profilsCollection
+    return profilesCollection
         .document(user.uid)
         .snapshots()
         .map(_accessTokenFromSnapshot);
@@ -107,36 +105,39 @@ class DatabaseService {
 
   //Save Username to Database
   Future saveUsername(String userName) async {
-    return await profilsCollection.document(user.uid).updateData({
+    return await profilesCollection.document(user.uid).updateData({
       "name": userName,
     });
   }
 
-  //Get a List of Profils from Snapshot
-  List<Profil> _profilListSnapshot(QuerySnapshot snapshot) {
+  //Get a List of Profiles from Snapshot
+  List<Profile> _profileListSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
-      return Profil.forDisplay(
+      return Profile.fromDatabase(
         user: User(uid: doc.documentID),
         name: doc.data["name"] ?? "",
-        profilPicture: doc.data["profilPicture"] ?? "",
+        profilePicture: doc.data["profilPicture"] ?? "",
+        accessToken: IgAccessToken(
+            igUserId: doc.data["igUserId"] ?? "",
+            igAccessToken: doc.data["igAccessToken"]),
       );
     }).toList();
   }
 
-  Stream<List<Profil>> get profils {
-    return profilsCollection.snapshots().map(_profilListSnapshot);
+  Stream<List<Profile>> get profiles {
+    return profilesCollection.snapshots().map(_profileListSnapshot);
   }
 
   //Save Username to Database
-  Future saveProfilPicture(IgMedia profilPicture) async {
-    return await profilsCollection.document(user.uid).updateData({
-      "profilPicture": profilPicture.mediaUrl,
+  Future saveProfilePicture(IgMedia profilePicture) async {
+    return await profilesCollection.document(user.uid).updateData({
+      "profilPicture": profilePicture.mediaUrl,
     });
   }
 
   Future<IgAccessToken> getAccessTokenFromUser(User user) async {
     DocumentSnapshot userDocument =
-        await profilsCollection.document(user.uid).get();
+        await profilesCollection.document(user.uid).get();
     return IgAccessToken(
         igUserId: userDocument.data["igUserId"] ?? "",
         igAccessToken: userDocument.data["igAccessToken"] ?? "");
@@ -154,20 +155,23 @@ class DatabaseService {
     });
   }
 
-  Future<Profil> getProfil(User user) async {
-    DocumentSnapshot userDocument =
-        await profilsCollection.document(user.uid).get();
-    if (userDocument.data == null) {
+  Future<Profile> getProfile(User user) async {
+    DocumentSnapshot userDoc =
+        await profilesCollection.document(user.uid).get();
+    if (userDoc.data == null) {
       return null;
     }
-    return Profil.forDisplay(
+    return Profile.fromDatabase(
       user: user,
-      name: userDocument.data["name"] ?? "",
-      profilPicture: userDocument.data["profilPicture"] ?? "",
+      name: userDoc.data["name"] ?? "",
+      profilePicture: userDoc.data["profilPicture"] ?? "",
+      accessToken: IgAccessToken(
+          igUserId: userDoc.data["igUserId"] ?? "",
+          igAccessToken: userDoc.data["igAccessToken"]),
     );
   }
 
-  Future<List<Profil>> getParticipants(Post post) async {
+  Future<List<Profile>> getParticipants(Post post) async {
     if (post.id == null) {
       return null;
     }
@@ -188,10 +192,20 @@ class DatabaseService {
       return null;
     }
 
-    List<Profil> participants = List<Profil>();
+    List<Profile> participants = List<Profile>();
     for (String part in partUsers) {
-      DocumentSnapshot partDoc = await profilsCollection.document(part).get();
-      participants.add(Profil.fromJson(partDoc.data));
+      DocumentSnapshot partDoc = await profilesCollection.document(part).get();
+      if (partDoc.data == null) {
+        return null;
+      }
+      participants.add(Profile.fromDatabase(
+        user: user,
+        name: partDoc.data["name"] ?? "",
+        profilePicture: partDoc.data["profilPicture"] ?? "",
+        accessToken: IgAccessToken(
+            igUserId: partDoc.data["igUserId"] ?? "",
+            igAccessToken: partDoc.data["igAccessToken"]),
+      ));
     }
 
     return participants;

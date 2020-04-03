@@ -1,4 +1,3 @@
-import 'package:fashion_app/models/post.dart';
 import 'package:fashion_app/services/database.dart';
 import 'package:fashion_app/shared/constants.dart';
 import 'package:flutter/material.dart';

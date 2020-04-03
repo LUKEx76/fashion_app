@@ -19,14 +19,4 @@ class Post {
       this.date,
       this.id,
       this.participants});
-
-  /*factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      creator: json['creator'] ?? "",
-      name: json['name'] ?? "",
-      location: json['location'] ?? "",
-      description: json['description'] ?? "",
-      date: json['date'],
-    );
-  }*/
 }
