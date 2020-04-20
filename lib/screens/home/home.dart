@@ -6,6 +6,7 @@ import 'package:fashion_app/screens/home/posts/post_create.dart';
 import 'package:fashion_app/screens/home/posts/posts_fragment.dart';
 import 'package:fashion_app/screens/home/profile/profile_fragment.dart';
 import 'package:fashion_app/screens/home/search/search_fragment.dart';
+import 'package:fashion_app/screens/home/settings.dart';
 import 'package:fashion_app/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fashion_app/services/database.dart';
@@ -19,6 +20,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
+  final List<String> dropDownValues = ["Settings", "Logout"];
 
   GetIt getIt;
   bool showFab;
@@ -65,16 +67,39 @@ class _HomeState extends State<Home> {
         appBar: AppBar(
           title: Text("fashion app"),
           actions: <Widget>[
-            FlatButton(
-              child: Icon(Icons.keyboard_arrow_left),
-              onPressed: () async {
-                try {
-                  getIt.reset();
-                } catch (e) {
-                  print("ERROR GetIt: " + e.toString());
-                }
-                await _auth.signOut();
-              },
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: DropdownButton(
+                icon: Icon(Icons.more_vert),
+                items: dropDownValues
+                    .map((f) => DropdownMenuItem(
+                          child: Text(f),
+                          value: f,
+                        ))
+                    .toList(),
+                onChanged: (value) async {
+                  print(value);
+                  switch (value) {
+                    case "Settings":
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Settings()));
+                      break;
+
+                    case "Logout":
+                      try {
+                        getIt.reset();
+                      } catch (e) {
+                        print("ERROR GetIt: " + e.toString());
+                      }
+                      await _auth.signOut();
+                      break;
+
+                    default:
+                      print(value + " is not a valid Dropdown Menu item");
+                      break;
+                  }
+                },
+              ),
             ),
           ],
         ),

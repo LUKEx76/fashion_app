@@ -38,25 +38,15 @@ class DatabaseService {
     //on the first call, firebase creates document for uid
     return await profilesCollection.document(name).setData({
       "name": name,
+      "mainRole": "",
+      "secondaryRole": "",
     });
   }
 
   //Get a List of Posts from Snapshot
   List<Post> _postListSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
-      Timestamp timestamp = doc.data["date"];
-      DateTime date =
-          DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
-      List<User> participants =
-          participantsFromDoc(doc).map((item) => User(uid: item)).toList();
-      return Post.fromDatabase(
-          creator: User(uid: doc.data["creator"]),
-          name: doc.data["name"] ?? "",
-          location: doc.data["location"] ?? "Somewhere",
-          description: doc.data["description"] ?? "",
-          date: date ?? null,
-          id: doc.documentID,
-          participants: participants);
+      return parsePost(doc);
     }).toList();
   }
 
@@ -65,19 +55,9 @@ class DatabaseService {
     return postsCollection.snapshots().map(_postListSnapshot);
   }
 
-  //User Data from Snapshot
-  Profile _profileFromSnapshot(DocumentSnapshot snapshot) {
-    Profile profile = Profile(user: User(uid: snapshot.documentID));
-    profile.name = snapshot.data["name"];
-    return profile;
-  }
-
   //Get User Doc Stream -> Profile Page needs to subscribe to this
   Stream<Profile> get profile {
-    return profilesCollection
-        .document(user.uid)
-        .snapshots()
-        .map(_profileFromSnapshot);
+    return profilesCollection.document(user.uid).snapshots().map(parseProfile);
   }
 
   //Save AccessToken to Database
@@ -113,14 +93,7 @@ class DatabaseService {
   //Get a List of Profiles from Snapshot
   List<Profile> _profileListSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
-      return Profile.fromDatabase(
-        user: User(uid: doc.documentID),
-        name: doc.data["name"] ?? "",
-        profilePicture: doc.data["profilPicture"] ?? "",
-        accessToken: IgAccessToken(
-            igUserId: doc.data["igUserId"] ?? "",
-            igAccessToken: doc.data["igAccessToken"]),
-      );
+      return parseProfile(doc);
     }).toList();
   }
 
@@ -161,14 +134,7 @@ class DatabaseService {
     if (userDoc.data == null) {
       return null;
     }
-    return Profile.fromDatabase(
-      user: user,
-      name: userDoc.data["name"] ?? "",
-      profilePicture: userDoc.data["profilPicture"] ?? "",
-      accessToken: IgAccessToken(
-          igUserId: userDoc.data["igUserId"] ?? "",
-          igAccessToken: userDoc.data["igAccessToken"]),
-    );
+    return parseProfile(userDoc);
   }
 
   Future<List<Profile>> getParticipants(Post post) async {
@@ -198,16 +164,8 @@ class DatabaseService {
       if (partDoc.data == null) {
         return null;
       }
-      participants.add(Profile.fromDatabase(
-        user: user,
-        name: partDoc.data["name"] ?? "",
-        profilePicture: partDoc.data["profilPicture"] ?? "",
-        accessToken: IgAccessToken(
-            igUserId: partDoc.data["igUserId"] ?? "",
-            igAccessToken: partDoc.data["igAccessToken"]),
-      ));
+      participants.add(parseProfile(partDoc));
     }
-
     return participants;
   }
 
@@ -270,18 +228,37 @@ class DatabaseService {
       return null;
     }
 
-    Timestamp timestamp = postDoc.data["date"];
+    return parsePost(postDoc);
+  }
+
+  Profile parseProfile(DocumentSnapshot doc) {
+    return Profile.fromDatabase(
+      user: User(uid: doc.documentID),
+      name: doc.data["name"] ?? "",
+      profilePicture: doc.data["profilPicture"] ?? "",
+      accessToken: IgAccessToken(
+          igUserId: doc.data["igUserId"] ?? "",
+          igAccessToken: doc.data["igAccessToken"]),
+      mainRole: doc.data["mainRole"] ?? "",
+      secondaryRole: doc.data["secondaryRole"] ?? "",
+    );
+  }
+
+  Post parsePost(DocumentSnapshot doc) {
+    Timestamp timestamp = doc.data["date"];
     DateTime date =
         DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
     List<User> participants =
-        participantsFromDoc(postDoc).map((item) => User(uid: item)).toList();
+        participantsFromDoc(doc).map((item) => User(uid: item)).toList();
+
     return Post.fromDatabase(
-        creator: User(uid: postDoc.data["creator"]),
-        name: postDoc.data["name"] ?? "",
-        location: postDoc.data["location"] ?? "Somewhere",
-        description: postDoc.data["description"] ?? "",
-        date: date ?? null,
-        id: postDoc.documentID,
-        participants: participants);
+      creator: User(uid: doc.data["creator"]),
+      name: doc.data["name"] ?? "Unknown",
+      location: doc.data["location"] ?? "Unknown",
+      description: doc.data["description"] ?? "",
+      date: date ?? null,
+      id: doc.documentID,
+      participants: participants,
+    );
   }
 }

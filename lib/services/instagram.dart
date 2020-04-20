@@ -63,6 +63,9 @@ class InstagramConnector {
 
   Future<List<IgMedia>> allPhotosOfUser(Profile profile) async {
     String url;
+    if (profile.accessToken?.igUserId?.length == 0) {
+      return null;
+    }
     if (profile.accessToken == null) {
       IgAccessToken accessToken = await _databaseService.accessToken.first;
       url = graphUrl +
@@ -88,7 +91,7 @@ class InstagramConnector {
     List<IgMedia> igMedia =
         igMediaData.map((dynamic item) => IgMedia.fromJson(item)).toList();
 
-    if (profile.user.uid == _databaseService.user.uid) {
+    if (igMedia.length != 0 && profile.user == _databaseService.user) {
       _databaseService.saveProfilePicture(igMedia.first);
     }
 

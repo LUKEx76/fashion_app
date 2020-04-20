@@ -12,7 +12,10 @@ class ProfileInfoDisplay extends StatelessWidget {
       return Container(
         height: 100,
         child: Center(
-          child: Text("${profile.name}"),
+          child: Text(
+            "${profile.name}",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
         ),
       );
     } else {

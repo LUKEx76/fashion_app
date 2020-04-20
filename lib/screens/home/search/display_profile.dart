@@ -1,6 +1,7 @@
 import 'package:fashion_app/models/profile.dart';
 import 'package:fashion_app/screens/home/profile/insta_picture_display.dart';
 import 'package:fashion_app/screens/home/profile/profile_info_display.dart';
+import 'package:fashion_app/screens/home/profile/role_display.dart';
 import 'package:flutter/material.dart';
 
 class DisplayProfile extends StatelessWidget {
@@ -18,6 +19,7 @@ class DisplayProfile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           ProfileInfoDisplay(profile: profile),
+          RoleDisplay(profile: profile),
           InstaPictureDisplay(profile: profile),
         ],
       ),

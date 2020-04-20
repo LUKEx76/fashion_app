@@ -35,7 +35,14 @@ class ProfileTile extends StatelessWidget {
                       profile.profilePicture ?? "",
                     ),
               title: Text(profile.name),
-              subtitle: Text("//ROLE"),
+              subtitle: profile.mainRole.length == 0
+                  ? Text("No Role picked yet")
+                  : profile.secondaryRole.length == 0
+                      ? Text("Main Role: " + profile.mainRole)
+                      : Text("Main Role: " +
+                          profile.mainRole +
+                          " | Secondary Role: " +
+                          profile.secondaryRole),
             ),
           ),
         ),
