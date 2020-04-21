@@ -20,8 +20,14 @@ class RoleDisplay extends StatelessWidget {
       );
     } else {
       return Container(
-        child: Text(
-            "Main Role: ${profile.mainRole}\nSecondary Role: ${profile.secondaryRole}"),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Text("Main Role: ${profile.mainRole}"),
+            SizedBox(height: 5),
+            Text("Secondary Role: ${profile.secondaryRole}"),
+          ],
+        ),
       );
     }
   }

@@ -91,7 +91,7 @@ class InstagramConnector {
     List<IgMedia> igMedia =
         igMediaData.map((dynamic item) => IgMedia.fromJson(item)).toList();
 
-    if (igMedia.length != 0 && profile.user == _databaseService.user) {
+    if (igMedia.length != 0 && profile.user.uid == _databaseService.user.uid) {
       _databaseService.saveProfilePicture(igMedia.first);
     }
 

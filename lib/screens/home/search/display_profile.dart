@@ -20,7 +20,9 @@ class DisplayProfile extends StatelessWidget {
         children: <Widget>[
           ProfileInfoDisplay(profile: profile),
           RoleDisplay(profile: profile),
-          InstaPictureDisplay(profile: profile),
+          Expanded(
+            child: InstaPictureDisplay(profile: profile),
+          ),
         ],
       ),
     );

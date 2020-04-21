@@ -16,10 +16,14 @@ class InstaWrapper extends StatelessWidget {
         IgAccessToken(igAccessToken: "", igUserId: "");
     //Check if user has valid Access Token
     if (accessToken.igAccessToken.length == 0) {
-      return RaisedButton(
-        child: Text("Connect to Instagram"),
-        onPressed: () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => InstaLogin())),
+      return Container(
+        child: Center(
+          child: RaisedButton(
+            child: Text("Connect to Instagram"),
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => InstaLogin())),
+          ),
+        ),
       );
     } else {
       return InstaPictureDisplay(profile: profile);

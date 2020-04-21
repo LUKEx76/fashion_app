@@ -47,7 +47,7 @@ class _DisplayPostState extends State<DisplayPost> {
         title: Text("Post Details"),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 42.0, vertical: 32.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -106,7 +106,7 @@ class _DisplayPostState extends State<DisplayPost> {
             ParticipantList(post: currentPost),
             SizedBox(height: 20.0),
             RaisedButton(
-              child: Text("Participate"),
+              child: Text("Request to Participate"),
               onPressed:
                   widget.creatorProfile.user.uid == _databaseService.user.uid ||
                           alreadyPart

@@ -41,24 +41,22 @@ class _InstaPictureDisplayState extends State<InstaPictureDisplay> {
       );
     } else {
       return Container(
-        child: Flexible(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: igMedia.length ?? 0,
-            itemBuilder: (context, index) {
-              if (igMedia[index].mediaType == "VIDEO") {
-                return Container();
-              } else {
-                return Container(
-                  padding: EdgeInsets.all(10),
-                  child: Image.network(
-                    igMedia[index].mediaUrl,
-                  ),
-                );
-              }
-            },
-          ),
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: igMedia.length ?? 0,
+          itemBuilder: (context, index) {
+            if (igMedia[index].mediaType == "VIDEO") {
+              return Container();
+            } else {
+              return Container(
+                padding: EdgeInsets.all(10),
+                child: Image.network(
+                  igMedia[index].mediaUrl,
+                ),
+              );
+            }
+          },
         ),
       );
     }

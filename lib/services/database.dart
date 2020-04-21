@@ -250,7 +250,6 @@ class DatabaseService {
         DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
     List<User> participants =
         participantsFromDoc(doc).map((item) => User(uid: item)).toList();
-
     return Post.fromDatabase(
       creator: User(uid: doc.data["creator"]),
       name: doc.data["name"] ?? "Unknown",
@@ -260,5 +259,39 @@ class DatabaseService {
       id: doc.documentID,
       participants: participants,
     );
+  }
+
+  Future saveRoles(String mainRole, String secondaryRole) async {
+    if (mainRole == secondaryRole) {
+      return await profilesCollection.document(user.uid).updateData({
+        "mainRole": mainRole,
+        "secondaryRole": "",
+      });
+    } else {
+      return await profilesCollection.document(user.uid).updateData({
+        "mainRole": mainRole,
+        "secondaryRole": secondaryRole,
+      });
+    }
+  }
+
+  Future<List<Post>> getAssociatedPosts() async {
+    List<Post> associatedPosts = List<Post>();
+    QuerySnapshot creatorQuerySnapshot = await postsCollection
+        .where("creator", isEqualTo: user.uid)
+        .getDocuments();
+
+    QuerySnapshot participantQuerySnapshot = await postsCollection
+        .where("participants", arrayContains: user.uid)
+        .getDocuments();
+
+    for (DocumentSnapshot creatorDoc in creatorQuerySnapshot.documents) {
+      associatedPosts.add(parsePost(creatorDoc));
+    }
+    for (DocumentSnapshot participantDoc
+        in participantQuerySnapshot.documents) {
+      associatedPosts.add(parsePost(participantDoc));
+    }
+    return associatedPosts;
   }
 }
